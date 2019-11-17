@@ -40,7 +40,7 @@
   <div class="form-group">
     <label for="thumbnail">Miniatura </label>
     <input type="file" id="thumbnail"  name="thumbnail"  accept="image/*" onchange="loadFile(event)">
-    <img width="100" height="100"  id="output"/>
+    <img width="100" height="100" src="<?php if(isset($thumbnail)) {echo asset('storage/'.$thumbnail.'');} ?>"  id="output"/>
 </div>
 <script type="text/javascript">
  var loadFile = function(event) {
