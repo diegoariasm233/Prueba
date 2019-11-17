@@ -122,29 +122,36 @@ class CompanyController extends Controller
         if (! Gate::allows('company_edit')) {
             return abort(401);
         }
+        $r = Company::find($id);
     $validator = Validator::make($request->all(), [
            'name'=>'required', 'email'=>'required', 'website'=>'required', 'thumbnail'=>'required',
         ]);
                        if ($validator->fails()) {
-                         return view('Companies.create',['id' => $request->id, 'name' => $request->name,'email' => $request->email,'thumbnail' => $request->thumbnail,'website'=>$request->website])->withErrors($validator);
+                         return view('Companies.create',['id' => $request->id, 'name' => $request->name,'email' => $request->email,'thumbnail' => $r->thumbnail,'website'=>$request->website])->withErrors($validator);
 
         }
         if($request->hasFile('thumbnail')){
             $file = $request->file('thumbnail');
 
-            $name = time().$file->getClientOriginalname();
+$nombre = substr($r->thumbnail, 10);
+$eval = $file->getClientOriginalName();
+if($nombre == $eval){
+    return view('Companies.create',['id' => $request->id, 'name' => $request->name,'email' => $request->email,'thumbnail' => $r->thumbnail,'website'=>$request->website])->withErrors('Esta imagen tiene el mismo nombre que la ya almacenada');
+}else{
+       $name = time().$file->getClientOriginalname();
           $ruta =  $file->move(storage_path().'/app/public/',$name);
 
                   Company::find($id)->update(['name' => $request->name , 'email' => $request->email,'thumbnail' => $name,'website' => $request->website]);
                  return redirect()->route('home')->with('success','Registro actualizado satisfactoriamente');
 
-
+}
             }else{
                   return redirect("/home/create/company")
                                 ->withErrors('Por favor subir un logo');
             }
 
     }
+
 
     /**
      * Remove the specified resource from storage.
